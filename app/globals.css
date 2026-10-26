@@ -15,6 +15,7 @@ html {
   color-scheme: dark;
   background: #0b0f17;
   scroll-padding-top: 5.5rem;
+  overflow-x: clip;
 }
 
 body {
@@ -88,6 +89,39 @@ body {
   animation: orbit-spin 34s linear infinite reverse;
 }
 
+.step-stack {
+  display: none;
+}
+
+.motion-story {
+  display: block;
+  touch-action: pan-y;
+}
+
+.motion-track {
+  height: 300dvh;
+  height: 300svh;
+}
+
+.motion-sticky {
+  height: 100dvh;
+  height: 100svh;
+}
+
+.pin-stage {
+  display: none;
+}
+
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .motion-story {
+    display: none;
+  }
+
+  .pin-stage {
+    display: flex;
+  }
+}
+
 .roster-grid {
   background-image:
     linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
@@ -111,7 +145,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pin-stage {
+  .pin-stage,
+  .motion-story {
     display: none !important;
   }
 

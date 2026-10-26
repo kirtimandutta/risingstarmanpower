@@ -1,12 +1,19 @@
 "use client";
 
 import { tiers } from "@/lib/content";
-import { motion, useReducedMotion } from "framer-motion";
+import {
+  motion,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ChevronDown } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -73,7 +80,7 @@ export function ScrollyShowcase() {
 
     const mm = gsap.matchMedia();
 
-    mm.add("(min-width: 1024px)", () => {
+    mm.add("(min-width: 1024px) and (hover: hover) and (pointer: fine)", () => {
       const pin = pinRef.current;
       const stage = stageRef.current;
       const tilt = tiltRef.current;
@@ -259,7 +266,8 @@ export function ScrollyShowcase() {
 
   return (
     <section id="workforce" className="relative bg-ink">
-      <div className="step-stack flex flex-col gap-5 overflow-x-hidden px-4 pt-28 pb-16 lg:hidden">
+      <MobileStory />
+      <div className="step-stack flex-col gap-5 px-4 pt-28 pb-16">
         <div className="px-1">
           <p className="text-xs font-medium tracking-[0.22em] text-gold uppercase">
             The Rising Star Manpower
@@ -338,7 +346,7 @@ export function ScrollyShowcase() {
         })}
       </div>
 
-      <div ref={pinRef} className="pin-stage relative hidden h-dvh bg-ink lg:flex">
+      <div ref={pinRef} className="pin-stage relative h-dvh bg-ink">
         <div className="roster-grid pointer-events-none absolute inset-0" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_42%,rgba(0,0,0,0.45)_100%)]" />
         <div className="relative mx-auto flex h-full w-full max-w-6xl items-center gap-8 px-6 pt-24 pb-8 lg:px-8">
@@ -505,5 +513,146 @@ export function ScrollyShowcase() {
         </p>
       </div>
     </section>
+  );
+}
+
+function MobileStory() {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: trackRef,
+    offset: ["start start", "end end"],
+  });
+  const [phase, setPhase] = useState(0);
+
+  useMotionValueEvent(scrollYProgress, "change", (value) => {
+    const next = value < 0.34 ? 0 : value < 0.67 ? 1 : 2;
+    setPhase((current) => (current === next ? current : next));
+  });
+
+  const copyOpacity = [
+    useTransform(scrollYProgress, [0, 0.24, 0.36], [1, 1, 0]),
+    useTransform(scrollYProgress, [0.28, 0.4, 0.58, 0.7], [0, 1, 1, 0]),
+    useTransform(scrollYProgress, [0.62, 0.76, 1], [0, 1, 1]),
+  ];
+  const propOpacity = [
+    useTransform(scrollYProgress, [0, 0.24, 0.36], [1, 1, 0]),
+    useTransform(scrollYProgress, [0.26, 0.4, 0.58, 0.7], [0, 1, 1, 0]),
+    useTransform(scrollYProgress, [0.6, 0.76, 1], [0, 1, 1]),
+  ];
+  const personOpacity = [
+    useTransform(scrollYProgress, [0, 0.24, 0.36], [1, 1, 0]),
+    useTransform(scrollYProgress, [0.32, 0.46, 0.58, 0.7], [0, 1, 1, 0]),
+    useTransform(scrollYProgress, [0.66, 0.82, 1], [0, 1, 1]),
+  ];
+  const propY = [
+    useTransform(scrollYProgress, [0, 0.24, 0.36], [0, 0, -24]),
+    useTransform(scrollYProgress, [0.26, 0.4, 0.58, 0.7], [28, 0, 0, -24]),
+    useTransform(scrollYProgress, [0.6, 0.76, 1], [36, 0, 0]),
+  ];
+  const personY = [
+    useTransform(scrollYProgress, [0, 0.24, 0.36], [0, 0, -20]),
+    useTransform(scrollYProgress, [0.32, 0.46, 0.58, 0.7], [48, 0, 0, -20]),
+    useTransform(scrollYProgress, [0.66, 0.82, 1], [56, 0, 0]),
+  ];
+  const hintOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
+
+  return (
+    <div ref={trackRef} className="motion-story motion-track relative">
+      <div className="motion-sticky sticky top-0 flex flex-col overflow-x-clip px-4 pt-24 pb-4">
+        <p className="text-xs font-medium tracking-[0.22em] text-gold uppercase">
+          The Rising Star Manpower
+        </p>
+        <h1 className="mt-3 max-w-xl font-display text-[1.7rem] leading-[1.05] font-semibold tracking-tight text-balance min-[380px]:text-4xl">
+          Personnel for the car, the gate, and the floor.
+        </h1>
+
+        <div className="relative mt-4 min-h-[7.5rem]">
+          {tiers.map((tier, index) => (
+            <StoryCopy
+              key={tier.id}
+              tierIndex={index}
+              opacity={copyOpacity[index]}
+              hidden={phase !== index}
+            />
+          ))}
+        </div>
+
+        <div className="relative mt-2 min-h-[220px] flex-1 overflow-x-clip">
+          <div className="pointer-events-none absolute inset-x-[12%] bottom-[8%] h-8 rounded-[100%] bg-[radial-gradient(ellipse,rgba(226,232,240,0.22),transparent_72%)]" />
+          {tiers.map((tier, index) => {
+            const plane = planes[tier.id];
+            return (
+              <div key={tier.id} className="absolute inset-0" aria-hidden={phase === index ? undefined : true}>
+                <motion.div
+                  style={{ opacity: propOpacity[index], y: propY[index] }}
+                  className={plane.mobileProp}
+                >
+                  <Image
+                    src={tier.prop}
+                    alt={tier.propAlt}
+                    fill
+                    sizes="92vw"
+                    className="object-contain object-bottom"
+                  />
+                </motion.div>
+                <motion.div
+                  style={{ opacity: personOpacity[index], y: personY[index] }}
+                  className={plane.mobilePerson}
+                >
+                  <Image
+                    src={tier.image}
+                    alt={tier.alt}
+                    fill
+                    sizes="70vw"
+                    preload={index === 0}
+                    className="object-contain object-bottom"
+                  />
+                </motion.div>
+              </div>
+            );
+          })}
+        </div>
+
+        <ol className="mt-3 grid grid-cols-3 gap-3">
+          {tiers.map((tier, index) => (
+            <li key={tier.id} data-active={phase === index ? "true" : "false"} className="phase-node">
+              <span className="phase-bar mb-2 block h-px w-full bg-gold" />
+              <span className="phase-index block text-[11px] font-medium tracking-[0.16em]">
+                {tier.index}
+              </span>
+              <span className="mt-1 block text-sm">{tier.short}</span>
+            </li>
+          ))}
+        </ol>
+        <motion.p
+          style={{ opacity: hintOpacity }}
+          className="mt-3 flex items-center gap-2 text-[11px] tracking-[0.18em] text-mute uppercase"
+        >
+          <ChevronDown className="size-4 text-gold" />
+          Scroll the roster
+        </motion.p>
+      </div>
+    </div>
+  );
+}
+
+function StoryCopy({
+  tierIndex,
+  opacity,
+  hidden,
+}: {
+  tierIndex: number;
+  opacity: MotionValue<number>;
+  hidden: boolean;
+}) {
+  const tier = tiers[tierIndex];
+  return (
+    <motion.div style={{ opacity }} aria-hidden={hidden} className="absolute inset-x-0 top-0">
+      <p className="text-xs font-medium tracking-[0.18em] text-gold uppercase">{tier.kicker}</p>
+      <h2 className="mt-1 font-display text-xl leading-tight font-semibold tracking-tight">
+        {tier.title}
+      </h2>
+      <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-mute">{tier.body}</p>
+    </motion.div>
   );
 }
