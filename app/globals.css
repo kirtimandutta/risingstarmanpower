@@ -1,26 +1,131 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-ink: #0b0f17;
+  --color-panel: #111827;
+  --color-gold: #f59e0b;
+  --color-gold-soft: #fbbf24;
+  --color-paper: #f9fafb;
+  --color-mute: #9ca3af;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
+  background: #0b0f17;
+  scroll-padding-top: 5.5rem;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #0b0f17;
+  color: #f9fafb;
+}
+
+::selection {
+  background: #f59e0b;
+  color: #0b0f17;
+}
+
+:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 3px;
+}
+
+#workforce,
+#solutions,
+#why-us,
+#get-staff {
+  scroll-margin-top: 5.5rem;
+}
+
+.hire-glow {
+  box-shadow:
+    0 0 0 1px rgba(245, 158, 11, 0.45),
+    0 10px 36px -12px rgba(245, 158, 11, 0.9);
+}
+
+.hire-glow:hover {
+  box-shadow:
+    0 0 0 1px rgba(251, 191, 36, 0.75),
+    0 0 28px rgba(245, 158, 11, 0.45),
+    0 16px 42px -10px rgba(245, 158, 11, 0.95);
+}
+
+.phase-node {
+  color: #9ca3af;
+}
+
+.phase-node .phase-bar {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.45s ease;
+}
+
+.phase-node[data-active="true"] {
+  color: #f9fafb;
+}
+
+.phase-node[data-active="true"] .phase-index {
+  color: #f59e0b;
+}
+
+.phase-node[data-active="true"] .phase-bar {
+  transform: scaleX(1);
+}
+
+@keyframes orbit-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.orbit-spin {
+  animation: orbit-spin 52s linear infinite;
+}
+
+.orbit-spin-reverse {
+  animation: orbit-spin 34s linear infinite reverse;
+}
+
+.roster-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse at 68% 46%, #000 12%, transparent 68%);
+}
+
+@media (max-height: 820px) {
+  .pin-stage .hero-title {
+    font-size: 2rem;
+  }
+
+  .pin-stage .hero-lede {
+    display: none;
+  }
+
+  .pin-stage .tier-title {
+    font-size: 1.55rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pin-stage {
+    display: none !important;
+  }
+
+  .step-stack {
+    display: flex !important;
+    flex-direction: column;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
